@@ -2,11 +2,11 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 )
 
 func main() {
@@ -41,5 +41,21 @@ func main() {
 		log.Fatalf("Error getting chosen app: %s\n", err)
 	}
 
-	fmt.Fprint(os.Stdout, app.cmd)
+	execPath, err := exec.LookPath(strings.Trim(app.cmd, " "))
+	if err != nil {
+		log.Fatalf("Error finding chosen app's path: %s\n", err)
+	}
+
+	env := os.Environ()
+	args := []string{app.cmd}
+	attr := &os.ProcAttr{
+		Env:   env,
+		Sys:   &syscall.SysProcAttr{},
+		Files: []*os.File{nil, nil, nil},
+	}
+
+	_, err = os.StartProcess(execPath, args, attr)
+	if err != nil {
+		log.Fatalf("Error initializing chosen app: %s\n", err)
+	}
 }
