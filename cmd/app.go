@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -87,4 +88,13 @@ func parseAppList(appFileNames []string) (appList, error) {
 		}
 	}
 	return list, nil
+}
+
+func (al *appList) getApp(name string) (app, error) {
+	for _, app := range *al {
+		if app.name == name {
+			return app, nil
+		}
+	}
+	return app{}, errors.New("app not found")
 }

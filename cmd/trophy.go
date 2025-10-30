@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -35,5 +36,10 @@ func main() {
 	}
 
 	parsedStdout := strings.TrimRight(stdout.String(), "\n")
-	fmt.Println(parsedStdout)
+	app, err := appList.getApp(parsedStdout)
+	if err != nil {
+		log.Fatalf("Error getting chosen app: %s\n", err)
+	}
+
+	fmt.Fprint(os.Stdout, app.cmd)
 }
