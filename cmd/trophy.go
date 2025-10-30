@@ -1,26 +1,39 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
+	"os/exec"
+	"strings"
 )
 
 func main() {
 	appFileNames, err := getAppFileNames()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	appList, err := parseAppList(appFileNames)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
+	var appNames []string
 	for _, app := range appList {
-		fmt.Printf("Name: %s\n", app.name)
-		fmt.Printf("Command: %s\n", app.cmd)
-		fmt.Printf("File Name: %s\n", app.fname)
-		fmt.Println()
+		appNames = append(appNames, app.name)
 	}
 
-	fmt.Println(len(appList))
+	var stdout bytes.Buffer
+	fuzzyFinder := exec.Command("/usr/bin/sk")
+	fuzzyFinder.Stdin = strings.NewReader(strings.Join(appNames, "\n"))
+	fuzzyFinder.Stdout = &stdout
+
+	err = fuzzyFinder.Run()
+	if err != nil {
+		log.Fatalf("Error starting fuzzy finder: %s\n", err)
+	}
+
+	parsedStdout := strings.TrimRight(stdout.String(), "\n")
+	fmt.Println(parsedStdout)
 }
