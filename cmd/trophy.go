@@ -49,8 +49,10 @@ func main() {
 	env := os.Environ()
 	args := []string{app.cmd}
 	attr := &os.ProcAttr{
-		Env:   env,
-		Sys:   &syscall.SysProcAttr{},
+		Env: env,
+		Sys: &syscall.SysProcAttr{
+			Setpgid: true,
+		},
 		Files: []*os.File{nil, nil, nil},
 	}
 
