@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	appFileNames, err := getAppFileNames()
@@ -8,7 +10,17 @@ func main() {
 		panic(err)
 	}
 
-	for _, file := range appFileNames {
-		fmt.Println(file.Name())
+	appList, err := parseAppList(appFileNames)
+	if err != nil {
+		panic(err)
 	}
+
+	for _, app := range appList {
+		fmt.Printf("Name: %s\n", app.name)
+		fmt.Printf("Command: %s\n", app.cmd)
+		fmt.Printf("File Name: %s\n", app.fname)
+		fmt.Println()
+	}
+
+	fmt.Println(len(appList))
 }
