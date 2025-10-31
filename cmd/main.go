@@ -1,20 +1,46 @@
-// - diferenciar os apps que precisam de terminal
-// e abri-los em um escolhido pelo usuário
-// - permitir configurar o trophy
-// - adicionar a linha de comando: escolha do terminal e do fuzzy finder
-// - consertar o bug nos aplicativos com argumentos (steam games)
+// TODO:
+// - open terminal apps in the terminal chosen by the user with -t flag
+// - fix bug when opening commands with more than one arg (v.g., steam games)
+// - add possibility to configure trophy with a config file
+// - review README
+
+/*
+ * Copyright (c) 2025 Frederico Winter
+ * https://github.com/frdwin/trophy
+ * frederico@diaswinter.com.br
+ */
+
 package main
 
 import (
 	"bytes"
+	"flag"
 	"log"
-	"os"
 	"os/exec"
 	"strings"
-	"syscall"
 
 	"github.com/frdwin/trophy/cmd/apps"
 )
+
+var fuzzyFlag, termFlag string
+
+func init() {
+	flag.StringVar(
+		&fuzzyFlag,
+		"f",
+		"/usr/bin/sk",
+		"The fuzzy finder application of your choice.",
+	)
+
+	flag.StringVar(
+		&termFlag,
+		"t",
+		"/usr/bin/ghostty",
+		"The terminal application of your choice.",
+	)
+
+	flag.Parse()
+}
 
 func main() {
 	appFileNames, err := apps.GetFileNames()
@@ -33,11 +59,11 @@ func main() {
 	}
 
 	var stdout bytes.Buffer
-	fuzzyFinder := exec.Command("/usr/bin/sk")
-	fuzzyFinder.Stdin = strings.NewReader(strings.Join(appNames, "\n"))
-	fuzzyFinder.Stdout = &stdout
+	fuzzy := exec.Command(fuzzyFlag)
+	fuzzy.Stdin = strings.NewReader(strings.Join(appNames, "\n"))
+	fuzzy.Stdout = &stdout
 
-	err = fuzzyFinder.Run()
+	err = fuzzy.Run()
 	if err != nil {
 		log.Fatalf("Error starting fuzzy finder: %s\n", err)
 	}
@@ -48,23 +74,5 @@ func main() {
 		log.Fatalf("Error getting chosen app: %s\n", err)
 	}
 
-	execPath, err := exec.LookPath(strings.Trim(app.Cmd, " "))
-	if err != nil {
-		log.Fatalf("Error finding chosen app's path: %s\n", err)
-	}
-
-	env := os.Environ()
-	args := []string{app.Cmd}
-	attr := &os.ProcAttr{
-		Env: env,
-		Sys: &syscall.SysProcAttr{
-			Setpgid: true,
-		},
-		Files: []*os.File{nil, nil, nil},
-	}
-
-	_, err = os.StartProcess(execPath, args, attr)
-	if err != nil {
-		log.Fatalf("Error initializing chosen app: %s\n", err)
-	}
+	app.Exec()
 }
