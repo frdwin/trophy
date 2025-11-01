@@ -17,6 +17,7 @@ import (
 	"flag"
 	"log"
 	"os/exec"
+	"sort"
 	"strings"
 
 	"github.com/frdwin/trophy/cmd/apps"
@@ -57,6 +58,7 @@ func main() {
 	for _, app := range appList {
 		appNames = append(appNames, app.Name)
 	}
+	sort.Strings(appNames)
 
 	var stdout bytes.Buffer
 	fuzzy := exec.Command(fuzzyFlag)
