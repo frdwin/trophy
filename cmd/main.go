@@ -1,5 +1,4 @@
 // TODO:
-// - open terminal apps in the terminal chosen by the user with -t flag
 // - fix bug when opening commands with more than one arg (v.g., steam games)
 // - add possibility to configure trophy with a config file
 // - review README
@@ -36,8 +35,8 @@ func init() {
 	flag.StringVar(
 		&termFlag,
 		"t",
-		"/usr/bin/ghostty",
-		"The terminal application of your choice.",
+		"/usr/bin/ghostty -e",
+		"The terminal command of your choice to open terminal apps.",
 	)
 
 	flag.Parse()
@@ -76,5 +75,5 @@ func main() {
 		log.Fatalf("Error getting chosen app: %s\n", err)
 	}
 
-	app.Exec()
+	app.Exec(termFlag)
 }

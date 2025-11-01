@@ -21,13 +21,15 @@ import (
 
 // The App struct represents an application with the following fields:
 //
-//	Name (string): The display name of the application.
-//	Cmd (string): The command to execute when the application is launched.
-//	noDisplay (bool): A flag indicating whether the application should be displayed in menus.
-//	fname (string): The filename of the .desktop file from which this app was parsed.
+//		Name (string): The display name of the application.
+//		Cmd (string): The command to execute when the application is launched.
+//	 Term (bool): A flag indicating whether the application should be opened in a terminal.
+//		noDisplay (bool): A flag indicating whether the application should be displayed in menus.
+//		fname (string): The filename of the .desktop file from which this app was parsed.
 type App struct {
 	Name      string
 	Cmd       string
+	Term      bool
 	noDisplay bool
 	fname     string
 }
@@ -109,6 +111,9 @@ func parseApp(filename string) (App, error) {
 			cmd := strings.Split(line[5:], "%")
 			newApp.Cmd = cmd[0]
 		}
+		if strings.HasPrefix(line, "Terminal=") && line[9:] == "true" {
+			newApp.Term = true
+		}
 		if strings.HasPrefix(line, "NoDisplay=") && line[10:] == "true" {
 			newApp.noDisplay = true
 		}
@@ -155,7 +160,7 @@ func (appList *AppList) GetApp(name string) (App, error) {
 	return App{}, errors.New("app not found")
 }
 
-func (app *App) Exec() {
+func (app *App) Exec(tf string) {
 	execPath, err := exec.LookPath(strings.Trim(app.Cmd, " "))
 	if err != nil {
 		log.Fatalf("Error finding chosen app's path: %s\n", err)
@@ -171,8 +176,17 @@ func (app *App) Exec() {
 		Files: []*os.File{nil, nil, nil},
 	}
 
-	_, err = os.StartProcess(execPath, args, attr)
-	if err != nil {
-		log.Fatalf("Error initializing chosen app: %s\n", err)
+	if app.Term {
+		termExecCmd := append(strings.Split(tf, " "), execPath)
+		log.Println(termExecCmd)
+		_, err = os.StartProcess(termExecCmd[0], termExecCmd, attr)
+		if err != nil {
+			log.Fatalf("Error initializing terminal app: %s\n", err)
+		}
+	} else {
+		_, err = os.StartProcess(execPath, args, attr)
+		if err != nil {
+			log.Fatalf("Error initializing chosen app: %s\n", err)
+		}
 	}
 }
