@@ -1,5 +1,4 @@
 // TODO:
-// - fix bug when opening commands with more than one arg (v.g., steam games)
 // - add possibility to configure trophy with a config file
 // - review README
 

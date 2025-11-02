@@ -21,11 +21,11 @@ import (
 
 // The App struct represents an application with the following fields:
 //
-//		Name (string): The display name of the application.
-//		Cmd (string): The command to execute when the application is launched.
-//	 Term (bool): A flag indicating whether the application should be opened in a terminal.
-//		noDisplay (bool): A flag indicating whether the application should be displayed in menus.
-//		fname (string): The filename of the .desktop file from which this app was parsed.
+// Name (string): The display name of the application.
+// Cmd (string): The command to execute when the application is launched.
+// Term (bool): A flag indicating whether the application should be opened in a terminal.
+// noDisplay (bool): A flag indicating whether the application should be displayed in menus.
+// fname (string): The filename of the .desktop file from which this app was parsed.
 type App struct {
 	Name      string
 	Cmd       string
@@ -90,7 +90,7 @@ func GetFileNames() ([]string, error) {
 // parseApp parses a given .desktop file and returns an App struct.
 //
 // Parameters:
-//   - filename (string): The path to the .desktop file to be parsed.
+// - filename (string): The path to the .desktop file to be parsed.
 //
 // Returns: an App instance filled with data from the specified file, or
 // an error if the file cannot be read.
@@ -124,7 +124,7 @@ func parseApp(filename string) (App, error) {
 // ParseFileNames processes multiple .desktop filenames and returns an AppList.
 //
 // Parameters:
-//   - appFileNames ([]string): A slice of paths to .desktop files.
+// - appFileNames ([]string): A slice of paths to .desktop files.
 //
 // Returns: an AppList containing parsed applications that are intended for display,
 // excluding those marked with NoDisplay=true. An error may be returned if parsing issues arise.
@@ -146,7 +146,7 @@ func ParseFileNames(appFileNames []string) (AppList, error) {
 // GetApp retrieves an application by name from the AppList.
 //
 // Parameters:
-//   - name (string): The name of the application to find.
+// - name (string): The name of the application to find.
 //
 // Returns: the corresponding App if found, or an error indicating that the
 // application does not exist in the list.
@@ -161,13 +161,14 @@ func (appList *AppList) GetApp(name string) (App, error) {
 }
 
 func (app *App) Exec(tf string) {
-	execPath, err := exec.LookPath(strings.Trim(app.Cmd, " "))
+	baseCmd := strings.Split(app.Cmd, " ")[0]
+	execPath, err := exec.LookPath(strings.Trim(baseCmd, " "))
 	if err != nil {
 		log.Fatalf("Error finding chosen app's path: %s\n", err)
 	}
 
 	env := os.Environ()
-	args := []string{app.Cmd}
+	args := strings.Split(app.Cmd, " ")
 	attr := &os.ProcAttr{
 		Env: env,
 		Sys: &syscall.SysProcAttr{
