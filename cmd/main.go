@@ -1,5 +1,4 @@
 // TODO:
-// - add possibility to configure trophy with a config file
 // - review README
 
 /*
@@ -18,7 +17,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/frdwin/trophy/cmd/apps"
+	"github.com/frdwin/trophy/internal/apps"
+	"github.com/frdwin/trophy/internal/config"
 )
 
 var fuzzyFlag, termFlag string
@@ -39,6 +39,11 @@ func init() {
 	)
 
 	flag.Parse()
+
+	if dat, err := config.Parse(); err == nil {
+		fuzzyFlag = dat.Fuzzy
+		termFlag = dat.Terminal
+	}
 }
 
 func main() {

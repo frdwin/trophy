@@ -1,0 +1,4 @@
+{
+  "fuzzy": "/usr/bin/fzf",
+  "terminal": "/usr/bin/alacritty -e"
+}
