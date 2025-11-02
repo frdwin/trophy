@@ -109,7 +109,7 @@ func parseApp(filename string) (App, error) {
 		}
 		if strings.HasPrefix(line, "Exec=") && newApp.Cmd == "" {
 			cmd := strings.Split(line[5:], "%")
-			newApp.Cmd = cmd[0]
+			newApp.Cmd = strings.Trim(cmd[0], " ")
 		}
 		if strings.HasPrefix(line, "Terminal=") && line[9:] == "true" {
 			newApp.Term = true
@@ -161,14 +161,13 @@ func (appList *AppList) GetApp(name string) (App, error) {
 }
 
 func (app *App) Exec(tf string) {
-	baseCmd := strings.Split(app.Cmd, " ")[0]
-	execPath, err := exec.LookPath(strings.Trim(baseCmd, " "))
+	cmdArgs := strings.Split(app.Cmd, " ")
+	execPath, err := exec.LookPath(strings.Trim(cmdArgs[0], " "))
 	if err != nil {
 		log.Fatalf("Error finding chosen app's path: %s\n", err)
 	}
 
 	env := os.Environ()
-	args := strings.Split(app.Cmd, " ")
 	attr := &os.ProcAttr{
 		Env: env,
 		Sys: &syscall.SysProcAttr{
@@ -178,14 +177,13 @@ func (app *App) Exec(tf string) {
 	}
 
 	if app.Term {
-		termExecCmd := append(strings.Split(tf, " "), execPath)
-		log.Println(termExecCmd)
+		termExecCmd := append(strings.Split(tf, " "), strings.Join(cmdArgs, " "))
 		_, err = os.StartProcess(termExecCmd[0], termExecCmd, attr)
 		if err != nil {
 			log.Fatalf("Error initializing terminal app: %s\n", err)
 		}
 	} else {
-		_, err = os.StartProcess(execPath, args, attr)
+		_, err = os.StartProcess(execPath, cmdArgs, attr)
 		if err != nil {
 			log.Fatalf("Error initializing chosen app: %s\n", err)
 		}
