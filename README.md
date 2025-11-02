@@ -1,12 +1,12 @@
-# trophy
+# 🏆 trophy
 
 ## Description:
 `trophy` is a terminal application launcher for GNU/Linux.
 It's like a terminal rofi (trophy).
 
 ## Dependencies:
-- A terminal;
-- A fuzzy finder application, like fzf.
+- A terminal, like alacritty, ghostty, etc;
+- A fuzzy finder application, like fzf, sk, etc.
 
 ## Usage:
 ```bash
@@ -20,6 +20,20 @@ Usage of trophy:
 $ trophy -f "/usr/bin/fzf" -t "/usr/bin/alacritty -e"
 ```
 
-## Next steps:
-- Fix bug when opening steam games shortcuts
-- Add a configuration file
+## Configuration
+If you prefer to use a config file, instead of command line arguments, just write a json
+named config.json inside $HOME/.config/trophy, like this example:
+
+```json
+{
+  "fuzzy": "/usr/bin/fzf",
+  "terminal": "/usr/bin/alacritty -e"
+}
+```
+
+## Instalation:
+```bash
+$ git clone https://github.com/frdwin/trophy && cd trophy
+$ go build -o trophy cmd/*.go
+$ sudo mv trophy /usr/bin
+```
