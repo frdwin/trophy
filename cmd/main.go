@@ -61,7 +61,8 @@ func main() {
 	sort.Strings(appNames)
 
 	var stdout bytes.Buffer
-	fuzzy := exec.Command(fuzzyFlag)
+	parsedFuzzy := strings.Split(fuzzyFlag, " ")
+	fuzzy := exec.Command(parsedFuzzy[0], parsedFuzzy[1:]...)
 	fuzzy.Stdin = strings.NewReader(strings.Join(appNames, "\n"))
 	fuzzy.Stdout = &stdout
 

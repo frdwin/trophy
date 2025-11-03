@@ -150,7 +150,6 @@ func ParseFileNames(appFileNames []string) (AppList, error) {
 //
 // Returns: the corresponding App if found, or an error indicating that the
 // application does not exist in the list.
-
 func (appList *AppList) GetApp(name string) (App, error) {
 	for _, app := range *appList {
 		if app.Name == name {
