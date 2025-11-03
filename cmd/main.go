@@ -1,6 +1,3 @@
-// TODO:
-// - review README
-
 /*
  * Copyright (c) 2025 Frederico Winter
  * https://github.com/frdwin/trophy

@@ -6,11 +6,17 @@ import (
 	"os"
 )
 
+// The Data struct holds configuration settings.
 type Data struct {
 	Fuzzy    string `json:"fuzzy"`
 	Terminal string `json:"terminal"`
 }
 
+// Parse reads the configuration file and returns a Data struct containing the settings.
+//
+// Returns:
+// A Data instance populated with values from the configuration file.
+// An error if any issues occur during file operations or JSON unmarshaling.
 func Parse() (Data, error) {
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
